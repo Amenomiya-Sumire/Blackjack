@@ -6,10 +6,14 @@ public class Player {
   private final ArrayList<Card> hand = new ArrayList<>();
   private int score;
   private final String name;
+  private boolean hasStood;
+  private boolean isBusted;
 
   public Player(String name) {
     this.name = name;
     this.score = 0;
+    this.hasStood = false;
+    this.isBusted = false;
   }
 
   public ArrayList<Card> getHand() {
@@ -24,10 +28,29 @@ public class Player {
     return name;
   }
 
+  public boolean hasStood() {
+    return this.hasStood;
+  }
+
+  public boolean isBusted() {
+    return this.isBusted;
+  }
+
+  public void stand() {
+    this.hasStood = true;
+  }
+
+  public void bust() {
+    this.isBusted = true;
+  }
+
   public void addCard(Card card) {
     if (card != null) {
       hand.add(card);
       calculateScore();
+      if (this.score > 21) {
+        this.isBusted = true;
+      }
     }
   }
 

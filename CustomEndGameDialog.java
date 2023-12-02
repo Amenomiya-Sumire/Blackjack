@@ -6,8 +6,10 @@ import javax.swing.border.AbstractBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 public class CustomEndGameDialog extends JDialog {
-  public CustomEndGameDialog(JFrame parent, String title, String message) {
+  private final BlackJackGUI gui;
+  public CustomEndGameDialog(JFrame parent, String title, String message, BlackJackGUI gui) {
     super(parent, title, true);
+    this.gui = gui;
 
     // Set dialog size
     this.setSize(400, 250);
@@ -42,9 +44,7 @@ public class CustomEndGameDialog extends JDialog {
     
     // 添加动作监听器
     playAgainButton.addActionListener(e -> onPlayAgain());
-    
     exitButton.addActionListener(e -> onExit());
-    
     
     buttonPanel.add(playAgainButton);
     buttonPanel.add(exitButton);
@@ -58,10 +58,10 @@ public class CustomEndGameDialog extends JDialog {
     this.dispose();
     
     // 重置游戏状态
-    BlackJack.reset();
+    gui.getGame().initializeGame();
     
     // 更新游戏界面
-    SwingUtilities.invokeLater(BlackJackGUI::resetGameInterface);
+    SwingUtilities.invokeLater(gui::resetGameInterface);
   }
 
   private void onExit() {

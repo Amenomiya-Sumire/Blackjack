@@ -3,27 +3,35 @@ package blackjack;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.plaf.basic.BasicButtonUI;
 
-public class BlackJackGUI {
+public class BlackJackGUI implements GameEventListener {
   private JFrame frame;
   private JPanel controlPanel;
   private int currentPlayerIndex = 0;
   private static final ArrayList<JPanel> playerPanels = new ArrayList<>();
   private static final ArrayList<JLabel> playerScores = new ArrayList<>();
-  private static ArrayList<Player> players;
+  private BlackJackGame game;
 
   public BlackJackGUI() {
-    initializePlayers();
+    this.game = new BlackJackGame();
+    this.game.setGameEventListener(this);
     createFrame();
     setupStartGameScreen();
+    game.initializeGame();
+    updateGameInterface(game.getPlayers()); // 更新界面显示
   }
 
-  public static void resetGameInterface() {
-    updateGameInterface(players);
+  public BlackJackGame getGame() {
+    return game;
+  }
+
+  public void resetGameInterface() {
+    updateGameInterface(game.getPlayers());
   }
 
   private void createFrame() {
@@ -39,14 +47,6 @@ public class BlackJackGUI {
     instructionsDialog.setVisible(true);
   }
 
-  private void initializePlayers() {
-    players = new ArrayList<>();
-
-    for (int i = 1; i <= 4; i++) {
-      players.add(new Player("Player " + i));
-    }
-  }
-
   private void setupGameScreen() {
     frame.getContentPane().removeAll();
 
@@ -60,7 +60,7 @@ public class BlackJackGUI {
     playerPanels.clear();
     playerScores.clear();
 
-    for (int i = 0; i < players.size(); i++) {
+    for (int i = 0; i < game.getPlayers().size(); i++) {
       JPanel panel = new JPanel(new BorderLayout());
       panel.setOpaque(false);
       panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -113,8 +113,7 @@ public class BlackJackGUI {
     frame.repaint();
   }
 
-  private static void updatePlayerHandDisplay(int playerIndex, Player player) {
-
+  private void updatePlayerHandDisplay(int playerIndex, Player player) {
     if (playerIndex >= playerPanels.size() || playerIndex >= playerScores.size()) {
       // 如果索引超出范围，不进行更新
       return;
@@ -172,48 +171,37 @@ public class BlackJackGUI {
   }
 
   private void handleHit() {
-    Player currentPlayer = players.get(currentPlayerIndex);
-    Card drawnCard = BlackJack.getDeck().drawCard();
-    
-    if (drawnCard != null) {
-      currentPlayer.addCard(drawnCard);
-      updatePlayerHandDisplay(currentPlayerIndex, currentPlayer);
-
-      if (currentPlayer.getScore() > 21) {
-        // 显示自定义 "Busts!" 对话框
-        CustomBustDialog bustDialog = new CustomBustDialog(frame, currentPlayer.getName());
-        bustDialog.setVisible(true);
-
-        // 处理玩家爆牌后的逻辑
-        moveToNextPlayer();
-      }
-    }
+    game.hit();
   }
 
   private void handleStand() {
-    moveToNextPlayer();
+    game.stand();
   }
 
-  private void moveToNextPlayer() {
-    currentPlayerIndex++;
-    if (currentPlayerIndex >= players.size()) {
-      currentPlayerIndex = 0;
-      BlackJack.decideWinner();
-      showEndGameOptions();
+  @Override
+  public void onGameOver(String winnerMessage) {
+    showEndGameOptions(winnerMessage);
+  }
+
+  @Override
+  public void onPlayerHit(Player player, boolean isBusted) {
+    int playerIndex = game.getPlayers().indexOf(player);
+    updatePlayerHandDisplay(playerIndex, player);
+    if (isBusted) {
+      CustomBustDialog bustDialog = new CustomBustDialog(frame, player.getName());
+      bustDialog.setVisible(true);
     }
   }
-
-  private void showEndGameOptions() {
+  
+  private void showEndGameOptions(String winnerMessage) {
     // Create and display custom dialog
-    CustomEndGameDialog dialog =
-        new CustomEndGameDialog(frame, "Game Over", BlackJack.winnerMessage);
+    CustomEndGameDialog dialog = new CustomEndGameDialog(frame, "Game Over", winnerMessage, this);
     dialog.setVisible(true);
   }
 
-  static void updateGameInterface(ArrayList<Player> updatedPlayers) {
-    players = updatedPlayers;
-    for (int i = 0; i < players.size(); i++) {
-      updatePlayerHandDisplay(i, players.get(i));
+  void updateGameInterface(List<Player> updatedPlayers) {
+    for (int i = 0; i < updatedPlayers.size(); i++) {
+      updatePlayerHandDisplay(i, (Player) updatedPlayers.get(i));
     }
   }
 
@@ -355,9 +343,9 @@ public class BlackJackGUI {
   }
 
   private void startGame() {
-    BlackJack.reset();
+    game.initializeGame();
     setupGameScreen();
-    updateGameInterface(BlackJack.players);
+    updateGameInterface(game.getPlayers());
   }
 
   static class BackgroundPanel extends JPanel {
