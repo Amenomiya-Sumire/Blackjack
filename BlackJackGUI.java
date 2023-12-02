@@ -173,8 +173,10 @@ public class BlackJackGUI {
 
   private void handleHit() {
     Player currentPlayer = players.get(currentPlayerIndex);
-    if (!BlackJack.getDeck().isEmpty()) {
-      currentPlayer.addCard(BlackJack.getDeck().remove(0));
+    Card drawnCard = BlackJack.getDeck().drawCard();
+    
+    if (drawnCard != null) {
+      currentPlayer.addCard(drawnCard);
       updatePlayerHandDisplay(currentPlayerIndex, currentPlayer);
 
       if (currentPlayer.getScore() > 21) {

@@ -1,13 +1,16 @@
 package blackjack;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collections;
+import javax.swing.*;
 
 public class BlackJack {
-  private static final ArrayList<Card> deck = new ArrayList<>();
+  private static final Deck deck = new Deck();
   public static final ArrayList<Player> players = new ArrayList<>();
   public static String winnerMessage;
+
+  public static Deck getDeck() {
+    return deck;
+  }
 
   public static void main(String[] args) {
     javax.swing.SwingUtilities.invokeLater(BlackJackGUI::new);
@@ -15,41 +18,8 @@ public class BlackJack {
     reset();
   }
 
-  public static ArrayList<Card> getDeck() {
-    return deck;
-  }
-
-  public static void init() {
-    initializeDeck(1);
-    initializeDeck(2);
-    initializeDeck(3);
-    initializeDeck(4);
-  }
-
-  public static void initializeDeck(int suit) {
-    String suitName = Card.getSuitName(suit); // 使用 Card 类的方法获取花色名称
-
-    for (int i = 1; i <= 13; i++) {
-      String rank = getRankName(i); // 使用一个新的方法来获取面值名称
-      int value = Math.min(i, 10); // J, Q, K 的值为 10
-      deck.add(new Card(rank, value, suitName, true));
-    }
-  }
-
-  private static String getRankName(int number) {
-    return switch (number) {
-      case 1 -> "ace";
-      case 11 -> "jack";
-      case 12 -> "queen";
-      case 13 -> "king";
-      default -> String.valueOf(number);
-    };
-  }
-
   public static void reset() {
-    init();
-    Collections.shuffle(deck);
-
+    deck.shuffle();
     players.clear();
 
     for (int i = 1; i <= 4; i++) {
@@ -57,7 +27,7 @@ public class BlackJack {
     }
 
     for (Player player : players) {
-      player.addCard(deck.remove(0));
+      player.addCard(deck.drawCard());
     }
 
     SwingUtilities.invokeLater(
