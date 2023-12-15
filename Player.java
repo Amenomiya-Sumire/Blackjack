@@ -40,10 +40,6 @@ public class Player {
     this.hasStood = true;
   }
 
-  public void bust() {
-    this.isBusted = true;
-  }
-
   public void addCard(Card card) {
     if (card != null) {
       hand.add(card);

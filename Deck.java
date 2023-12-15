@@ -1,11 +1,11 @@
 package blackjack;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Random;
 
 public class Deck {
-  private final ArrayList<Card> cards = new ArrayList<>();
-
+  private final Card[] cards = new Card[52];
+  private final Card[] cardsArray = new Card[52];
+  private int pointer;
   public Deck() {
     initialize();
     shuffle();
@@ -17,9 +17,11 @@ public class Deck {
         String suitName = Card.getSuitName(suit);
         String rankName = getRankName(rank);
         int value = Math.min(rank, 10);
-        cards.add(new Card(rankName, value, suitName, true));
+        Card aCard = new Card(rankName, value, suitName, true);
+        cardsArray[(suit-1)*13+rank-1] = aCard;
       }
     }
+    pointer = 0;
   }
 
   private static String getRankName(int number) {
@@ -33,10 +35,22 @@ public class Deck {
   }
 
   public void shuffle() {
-    Collections.shuffle(cards);
+	System.arraycopy(cardsArray, 0, cards, 0, 52);
+	Random rand = new Random();
+	pointer = 0;
+	for(int i = 51;i>0;i--) {
+		int index = rand.nextInt(52);
+		Card temp = cards[index];
+		cards[index] = cards[i];
+		cards[i]=temp;
+	}
+	  
   }
 
   public Card drawCard() {
-    return cards.isEmpty() ? null : cards.remove(0);
+	
+	if(pointer>=52)
+		return null;
+	return(cards[pointer++]); 
   }
 }

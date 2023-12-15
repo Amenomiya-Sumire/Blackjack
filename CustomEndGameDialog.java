@@ -7,6 +7,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 
 public class CustomEndGameDialog extends JDialog {
   private final BlackJackGUI gui;
+
   public CustomEndGameDialog(JFrame parent, String title, String message, BlackJackGUI gui) {
     super(parent, title, true);
     this.gui = gui;
@@ -18,19 +19,11 @@ public class CustomEndGameDialog extends JDialog {
     JPanel panel = new JPanel(new BorderLayout(10, 10));
     panel.setBackground(Color.BLACK);
 
-    // 创建并设置消息标签
-    JLabel messageLabel =
-        new JLabel(
-            "<html><div style='text-align: center; color: white; padding: 40px 0;'>"
-                + message
-                + "</div></html>",
-            SwingConstants.CENTER);
-    messageLabel.setFont(new Font("Arial", Font.BOLD, 20));
+    JLabel messageLabel = getjLabel(message);
     panel.add(messageLabel, BorderLayout.NORTH);
 
-    // 创建并设置小字体的额外消息
     JLabel questionLabel = new JLabel("Play again or not?", SwingConstants.CENTER);
-    questionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+    questionLabel.setFont(new Font("华文细黑", Font.PLAIN, 12));
     questionLabel.setForeground(new Color(0x8a8b8c));
     panel.add(questionLabel, BorderLayout.CENTER);
 
@@ -41,11 +34,10 @@ public class CustomEndGameDialog extends JDialog {
 
     styleButton(playAgainButton);
     styleButton(exitButton);
-    
-    // 添加动作监听器
+
     playAgainButton.addActionListener(e -> onPlayAgain());
     exitButton.addActionListener(e -> onExit());
-    
+
     buttonPanel.add(playAgainButton);
     buttonPanel.add(exitButton);
     panel.add(buttonPanel, BorderLayout.SOUTH);
@@ -53,19 +45,39 @@ public class CustomEndGameDialog extends JDialog {
     this.setContentPane(panel);
   }
 
+  /**
+   * The HTML tags in the messageLabel are used to format the text of the label.
+   *
+   * <p\>Specifically, html and div tags allow for advanced styling, such as center alignment
+   * (text-align: center), text color (color: white), and padding (padding: 40px 0).
+   *
+   * <p\>This HTML formatting is used to enhance the visual presentation of the message in the label
+   * within the dialog box.
+   */
+  private static JLabel getjLabel(String message) {
+    JLabel messageLabel =
+        new JLabel(
+            "<html><div style='text-align: center; color: white; padding: 40px 0;'>"
+                + message
+                + "</div></html>",
+            SwingConstants.CENTER);
+    messageLabel.setFont(new Font("华文细黑", Font.BOLD, 20));
+    return messageLabel;
+  }
+
   private void onPlayAgain() {
-    // 关闭当前对话框
+    // Close this dialog
     this.dispose();
-    
-    // 重置游戏状态
+
+    // Reset game
     gui.getGame().initializeGame();
-    
-    // 更新游戏界面
+
+    // Update the game Interface
     SwingUtilities.invokeLater(gui::resetGameInterface);
   }
 
   private void onExit() {
-    // 处理 Exit 按钮事件
+    // Close this dialog and the program
     this.dispose();
     System.exit(0);
   }
@@ -76,13 +88,12 @@ public class CustomEndGameDialog extends JDialog {
     button.setContentAreaFilled(false);
     button.setForeground(Color.WHITE);
     button.setFocusPainted(false);
-    button.setFont(new Font("Arial", Font.BOLD, 12)); // 增加字体大小
-    button.setPreferredSize(new Dimension(100, 25)); // 增加按钮尺寸
+    button.setFont(new Font("华文细黑", Font.BOLD, 12));
+    button.setPreferredSize(new Dimension(100, 25));
     button.setBorder(new BlackJackGUI.RoundedBorder(10, Color.WHITE));
-    button.setMargin(new Insets(10, 20, 10, 20)); // 增加文本与按钮边界的间距
+    button.setMargin(new Insets(10, 20, 10, 20));
     button.setBorder(new RoundedBorder(10, Color.GRAY));
 
-    // 重写按钮的绘制方法来实现自定义的背景和边框
     button.setUI(
         new BasicButtonUI() {
           @Override
@@ -91,11 +102,11 @@ public class CustomEndGameDialog extends JDialog {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             if (button.getModel().isPressed()) {
-              g2.setColor(new Color(0xff7582)); // 按下时的颜色
+              g2.setColor(new Color(0xff7582));
             } else if (button.getModel().isRollover()) {
-              g2.setColor(new Color(0xc56c86)); // 鼠标悬浮时的颜色
+              g2.setColor(new Color(0xc56c86));
             } else {
-              g2.setColor(new Color(0x725a7a)); // 默认颜色
+              g2.setColor(new Color(0x725a7a));
             }
 
             g2.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), 10, 10);

@@ -3,23 +3,37 @@ package blackjack;
 import java.awt.*;
 import javax.swing.*;
 
+/**
+ * html: Starts the HTML content.
+ *
+ * <p\>body: Contains all the content with styles for font, size, alignment, and margin.
+ *
+ * <p\>h2: Creates a main heading for the welcome message, styled with a specific color.
+ *
+ * <p\>h3: Used for subheadings like "Rules" and "Winning Criteria," styled with enlarged font size
+ * and color.
+ *
+ * <p\>ul: Defines an unordered list to present the game rules and winning criteria.
+ *
+ * <p\>li: List items within the unordered list, detailing individual rules and criteria.
+ *
+ * <p\>p: A paragraph at the end, styled with a specific font size and color, providing a closing
+ * message.
+ */
 public class CustomInstructionsDialog extends JDialog {
   public CustomInstructionsDialog(JFrame parent) {
     super(parent, "Instructions", true);
 
-    // 设置对话框的大小和位置
     setSize(500, 600);
     setLocationRelativeTo(parent);
 
-    // 创建面板并设置布局
     JPanel panel = new JPanel(new BorderLayout());
     panel.setBackground(Color.BLACK);
 
-    // 创建并设置显示信息的标签
     JLabel messageLabel =
         new JLabel(
             "<html>"
-                + "<body style='font-family:Arial; font-size:12px; text-align:left; margin: 20px;'>"
+                + "<body style='font-family:华文细黑; font-size:12px; text-align:left; margin: 20px;'>"
                 + "<h2 style='color:#8693ab;'>Welcome to Blackjack!</h2>"
                 + "<h3 style='font-size:14px; color:#8693ab;'>Rules:</h3>"
                 + // Enlarged font size for <h3> and set color
@@ -42,11 +56,10 @@ public class CustomInstructionsDialog extends JDialog {
                 "</body>"
                 + "</html>",
             SwingConstants.LEFT);
-    messageLabel.setFont(new Font("Arial", Font.BOLD, 18));
+    messageLabel.setFont(new Font("华文细黑", Font.BOLD, 18));
     messageLabel.setForeground(Color.WHITE);
     panel.add(messageLabel);
 
-    // 将面板添加到对话框
     setContentPane(panel);
   }
 }
